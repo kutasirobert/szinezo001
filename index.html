@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>Színező Melléklet v1.0</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <style>
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; background-color: #ffffff;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- Cím felül --- */
+        #main-title {
+            margin-top: 50px;
+            color: #2c3e50;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            z-index: 10;
+        }
+
+        /* --- Beviteli konténer középen --- */
+        #start-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 80%;
+            max-width: 300px;
+            transition: opacity 0.5s;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #bdc3c7;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            text-align: center;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: #3498db;
+        }
+
+        #start-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        #start-btn:active {
+            transform: scale(0.98);
+        }
+
+        #msg {
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* --- UI Gombok (Maradék beállítások) --- */
+        #fs-button {
+            position: fixed; top: 10px; right: 10px;
+            background-color: rgba(0, 0, 0, 0.1); color: #7f8c8d;
+            border: 1px solid #bdc3c7; padding: 5px 10px; border-radius: 5px;
+            cursor: pointer; z-index: 100; font-size: 0.6rem;
+        }
+
+        /* Telepítő Panel */
+        #install-panel {
+            position: fixed; right: 0; top: 50%;
+            transform: translateY(-50%) translateX(100%);
+            display: none; align-items: center; z-index: 1000;
+            transition: transform 0.4s;
+        }
+        #install-panel.visible { display: flex; transform: translateY(-50%) translateX(0); }
+        #install-panel.collapsed { transform: translateY(-50%) translateX(calc(100% - 40px)); }
+        #install-content { background: #3498db; color: white; padding: 15px; border-radius: 15px 0 0 15px; }
+        #toggle-btn { background: #2980b9; color: white; border: none; width: 40px; height: 60px; border-radius: 10px 0 0 10px; }
+    </style>
+</head>
+<body>
+
+    <h1 id="main-title">színező melléklet</h1>
+
+    <div id="start-container">
+        <input type="text" id="activation-input" placeholder="Kód beírása..." maxlength="20">
+        <button id="start-btn" onclick="checkCode()">Kezdés</button>
+        <p id="msg"></p>
+    </div>
+
+    <button id="fs-button" onclick="toggleFullScreen()">TELJES KÉPERNYŐ</button>
+
+    <div id="install-panel">
+        <button id="toggle-btn" onclick="togglePanel()">‹</button>
+        <div id="install-content">
+            <span style="font-size: 0.7rem; font-weight: bold;">TELEPÍTÉS</span><br>
+            <button onclick="pwaInstall()" style="margin-top:5px; font-size:0.7rem;">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. AKTIVÁLÁS ---
+        const VALID_CODE = "medve";
+
+        function checkCode() {
+            const input = document.getElementById('activation-input').value.trim().toLowerCase();
+            const msg = document.getElementById('msg');
+            const container = document.getElementById('start-container');
+            
+            if (input === VALID_CODE) {
+                msg.innerText = "Kód elfogadva";
+                msg.style.color = "#2ecc71";
+                
+                // Rövid várakozás után eltüntetünk mindent a címen kívül
+                setTimeout(() => {
+                    container.style.display = 'none';
+                }, 1000);
+            } else {
+                msg.innerText = "Hibás kód";
+                msg.style.color = "#e74c3c";
+            }
+        }
+
+        // --- 2. PWA ÉS UI (Változatlan beállítások) ---
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault(); deferredPrompt = e;
+            document.getElementById('install-panel').classList.add('visible');
+        });
+        async function pwaInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') document.getElementById('install-panel').classList.remove('visible');
+                deferredPrompt = null;
+            }
+        }
+        function togglePanel() {
+            document.getElementById('install-panel').classList.toggle('collapsed');
+            document.getElementById('toggle-btn').innerText = document.getElementById('install-panel').classList.contains('collapsed') ? '›' : '‹';
+        }
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+            else document.exitFullscreen();
+        }
+    </script>
+</body>
+</html>
