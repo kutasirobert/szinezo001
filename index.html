@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title>Színező Melléklet v1.0</title>
+    <title>Színező Melléklet v1.2.1</title>
     <link rel="manifest" href="manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,7 +20,6 @@
             align-items: center;
         }
 
-        /* --- Cím felül --- */
         #main-title {
             margin-top: 50px;
             color: #2c3e50;
@@ -31,7 +30,6 @@
             z-index: 10;
         }
 
-        /* --- Beviteli konténer középen --- */
         #start-container {
             position: absolute;
             top: 50%;
@@ -55,10 +53,6 @@
             outline: none;
         }
 
-        input[type="text"]:focus {
-            border-color: #3498db;
-        }
-
         #start-btn {
             width: 100%;
             padding: 15px;
@@ -70,28 +64,17 @@
             font-size: 1.1rem;
             cursor: pointer;
             text-transform: uppercase;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        #start-btn:active {
-            transform: scale(0.98);
-        }
+        #msg { margin-top: 15px; font-weight: bold; font-size: 0.9rem; }
 
-        #msg {
-            margin-top: 15px;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-
-        /* --- UI Gombok (Maradék beállítások) --- */
         #fs-button {
             position: fixed; top: 10px; right: 10px;
             background-color: rgba(0, 0, 0, 0.1); color: #7f8c8d;
             border: 1px solid #bdc3c7; padding: 5px 10px; border-radius: 5px;
-            cursor: pointer; z-index: 100; font-size: 0.6rem;
+            font-size: 0.6rem;
         }
 
-        /* Telepítő Panel */
         #install-panel {
             position: fixed; right: 0; top: 50%;
             transform: translateY(-50%) translateX(100%);
@@ -110,7 +93,7 @@
 
     <div id="start-container">
         <input type="text" id="activation-input" placeholder="Kód beírása..." maxlength="20">
-        <button id="start-btn" onclick="checkCode()">Kezdés</button>
+        <button id="start-btn" onclick="_0x4a21()">Kezdés</button>
         <p id="msg"></p>
     </div>
 
@@ -125,29 +108,33 @@
     </div>
 
     <script>
-        // --- 1. AKTIVÁLÁS ---
-        const VALID_CODE = "medve";
+        const _0x_v = "9700547078426f8303d7756e07624971c26f04c62252a1608674d817edb0ec46";
 
-        function checkCode() {
-            const input = document.getElementById('activation-input').value.trim().toLowerCase();
-            const msg = document.getElementById('msg');
-            const container = document.getElementById('start-container');
+        async function _0x4a21() {
+            const _0x1 = document.getElementById('activation-input');
+            const _0x2 = document.getElementById('msg');
+            const _0x3 = document.getElementById('start-container');
             
-            if (input === VALID_CODE) {
-                msg.innerText = "Kód elfogadva";
-                msg.style.color = "#2ecc71";
-                
-                // Rövid várakozás után eltüntetünk mindent a címen kívül
-                setTimeout(() => {
-                    container.style.display = 'none';
-                }, 1000);
+            let _0x4 = Array.from(_0x1.value.trim().toLowerCase())
+                             .map(_0x5 => String.fromCharCode(_0x5.charCodeAt(0) + 1))
+                             .join('');
+
+            const _0x6 = new TextEncoder().encode(_0x4);
+            const _0x7 = await crypto.subtle.digest('SHA-256', _0x6);
+            const _0x8 = Array.from(new Uint8Array(_0x7))
+                              .map(_0x9 => _0x9.toString(16).padStart(2, '0'))
+                              .join('');
+
+            if (_0x8 === _0x_v) {
+                _0x2.innerText = "Kód elfogadva";
+                _0x2.style.color = "#2ecc71";
+                setTimeout(() => { _0x3.style.display = 'none'; }, 800);
             } else {
-                msg.innerText = "Hibás kód";
-                msg.style.color = "#e74c3c";
+                _0x2.innerText = "Hibás kód";
+                _0x2.style.color = "#e74c3c";
             }
         }
 
-        // --- 2. PWA ÉS UI (Változatlan beállítások) ---
         if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
