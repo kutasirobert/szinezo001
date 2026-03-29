@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title>Színező Melléklet v1.7.4</title>
+    <title>Színező Melléklet v1.7 - TTS</title>
     <link rel="manifest" href="manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -59,7 +59,7 @@
         #msg { margin-top: 15px; font-weight: bold; font-size: 0.9rem; }
 
         #content-area {
-            display: none; width: 95%; max-width: 650px;
+            display: none; width: 90%; max-width: 600px;
             padding-bottom: 50px; z-index: 5;
         }
 
@@ -70,6 +70,8 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
+        .list-item:active { transform: scale(0.98); }
+
         #detail-view {
             display: none; width: 100%; line-height: 1.6; color: #34495e;
             background: white; padding: 25px; border-radius: 15px; 
@@ -79,11 +81,23 @@
 
         #text-body { white-space: pre-wrap; font-size: 1.1rem; margin-bottom: 20px; }
 
-        .btn-row { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+        .btn-row { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
 
-        .back-btn { padding: 10px 15px; background: #34495e; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
-        .speak-btn { padding: 10px 15px; background: #2ecc71; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
-        .stop-btn { padding: 10px 15px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
+        .back-btn {
+            padding: 10px 20px; background: #34495e; color: white; 
+            border: none; border-radius: 5px; cursor: pointer; font-size: 0.9rem;
+        }
+
+        .speak-btn {
+            padding: 10px 20px; background: #f1c40f; color: #2c3e50; 
+            border: none; border-radius: 5px; cursor: pointer; font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .stop-btn {
+            padding: 10px 20px; background: #e74c3c; color: white; 
+            border: none; border-radius: 5px; cursor: pointer; font-size: 0.9rem;
+        }
 
         #fs-button {
             position: fixed; top: 10px; right: 10px;
@@ -115,15 +129,15 @@
             <p id="msg"></p>
         </div>
 
-        <div id="content-area" style="text-align: center;">
+        <div id="content-area">
             <div id="list-view"></div>
             <div id="detail-view">
                 <div class="btn-row">
-                    <button class="back-btn" onclick="_0x_back()">VISSZA</button>
+                    <button class="back-btn" onclick="_0x_back()">← Vissza</button>
                     <button class="speak-btn" onclick="_0x_speak()">🔊 FELOLVASÁS</button>
                     <button class="stop-btn" onclick="_0x_stop()">🛑 STOP</button>
                 </div>
-                <div id="text-body" style="text-align: left;"></div>
+                <div id="text-body"></div>
             </div>
         </div>
     </div>
@@ -141,10 +155,9 @@
     <script>
         const _0x_v = "0c3d3a0a1c1b1e118830185eaec3e5e6254ebc30f47f93a0a7613f2112e83c6e";
         const _0x_k = "app_verified_state";
-        
         const _0x_data = [
-            { t: "1. Fejezet: ismertető", c: "SXNtZXJ0ZXTFkSBhIG1hZ3lhcm9yc3rDoWdpIG3Ds2t1c29rcsOzbApNYWd5YXJvcnN6w6FnIGVyZGVpYmVuIHN6aW50ZSBtaW5kZW5ob2wgdGFsw6Fsa296aGF0c3ogbcOza3Vzb2trYWwsIGxlZ3llbiBzesOzIGLDvGtrw7Zzw7ZrcsWRbCB2YWd5IGZlbnl2ZXNla3LFkWwuIEV6ZWsgYSBraXMgw6FsbGF0b2sgaWdhemkgYWtyb2JhdMOhazogaGF0YWxtYXNha2F0IHVncmFuYWsgYXogw6FnYWsga8O2esO2dHQsIG1pa8O2emJlbiBib3pvbnRvcyBmYXJrdWtrYWwgZWd5ZW5zw7pseW96bmFrLCBtaW50IGVneSBrw7Z0w6lsdMOhbmNvcy4gQnVuZMOhanVrIHN6w61uZSB2w6FsdG96YXRvcywgYSB2w7Zyw7ZzZXNiYXJuw6F0w7NsIGVnw6lzemVuIGEgc8O2t1c29rIGfDtm1iw7ZsecWxIGbDqXN6a2V0IMOpcMOtdGVuZWsgZ2FsbHlha2LDs2wgYSBmw6FrIG1hZ2Fzw6FiYW4sIGFtaXQgcHVoYSBtb2jDoXZhbCDDqXMgZsWxdmVsIGLDqWxlbG5layBraS4gVMOpbGVuIG5lbSBhbHN6YW5hayBpZ2F6aSB0w6lsaSDDoWxtb3QsIGNzYWsgYmVow7p6w7NkbmFrIGEgbWVsZWcgZsOpc3prw7xrYmUgYSBuYWd5IGhpZGVnIGVsxZFsLiBIYSBraXPDvHQgYSBuYXAsIGlseWVua29yIGlzIGVsxZFiw7pqbmFrLCBob2d5IGVsxZFrZXJlc3PDqWsgYXogxZFzc3pervXVsZSBpcyBhem9ubmFsIGZlbHN6YWxhZG5hayBhIGZhIHTDtnJ6c8OpbiBhIGJpenRvbnPDoWdiYS4KCvCfp5AgVHVkdGFkLWU/IEVneSBpemdhbG1hcyDDqXJkZWtlc3PDqWcKQSBtw7NrdXNvayBpZ2F6aSAiZmVsZWTDqWtlbnkga2VydMOpc3playIhIPCfjLMKxZBzc3pervXVsZSBpcyBhem9ubmFsIGZlbHN6YWxhZG5hayBhIGZhIHTDtnJ6c8OpbiBhIGJpenRvbnPDoWdiYS4KCvCfp5AgVHVkdGFkLWU/IEVneSBpemdhbG1hcyDDqXJkZWtlc3PDqWcKQSBtw7NrdXNvayBpZ2F6aSAiZmVsZWTDqWtlbnkga2VydMOpc3playIhIPCfjLMK" },
-            { t: "2. Fejezet: mese", c: "TW9neWkgw6lzIGF6IGVsZmVsZWp0ZXR0IGtpbmNzCk1vZ3lpLCBhIHbDtnLDtnMgYnVuZMOhasO6IG3Ds2t1c2d5ZXJlaywgZWfDqXN6IMWRc3N6ZWwgw7pneSBkb2xnb3pvdHQsIG1pbnQgZWd5IGtpcyBnw6lwLiBHecWxanTDtnR0IG1ha2tvdCwgdG9ib3p0LCDDqXMgbcOpZyBlZ3kgaGF0YWxtYXMsIGbDqW55ZXMgZGnDs3QgaXMgdGFsw6FsdCBhIHRpc3p0w6FzIHN6w6lsw6luLiDigJ5FeiBsZXN6IGEgbGVnZmlub21hYmIgcmVnZ2VsaW0gYSBsZWdoaWRlZ2ViYiBuYXBvbiHigJ0g4oCTIGdvbmRvbHRhIGLDvHN6a8Opbiwgw6lzIGdvbmRvc2FuIGVsw6FzdGEgYSBkacOzdCBlZ3kgw7ZyZWcgdMO2bGd5ZmEgdMO2dsOpYmUsIHBvbnQgYSBoYXJtYWRpayBnecO2a8OpciBtZWxsw6kuClRlbHQtbcO6bHQgYXogaWTFkSwgw6lzIGJla8O2c3rDtm50w7Z0dCBhIHTDqWwuIEVneSByZWdnZWwgTW9neWkga29yZ8OzIGd5b21vcnJhbCDDqWJyZWR0LCDDqXMgZXN6w6liZSBqdXRvdHQgYSBraW5jc2UuIExlc3VycmFudCBhIGbDoXLDs2wsIGRlIGEgdMO2bGd5ZsOhdCB0ZWxqZXNlbiBlbGZlZHRlIGEgcHVoYSwgZmVow6lyIGjDsy4gTW9neWkgdmFrYXJ0YSBhIGbDvGxlIHTDtnbDqXQ6CuKAkyBJdHQgdm9sdD8gVmFneSB0YWzDoW4gYW1hbm7DoWwgYSBmw6Fuw6FsPyDigJMgdGFuYWtvZG90dC4KRWfDqXN6IGTDqWxlbMWRdHQgbMOhemFzYW4gw6Fzb3R0IGEgaMOzYmFuLCBkZSBhIGRpw7Mgc2Vob2wgc2VtIGxldHQgbWVnLiBUYWzDoWx0IGhlbHlldHRlIGjDoXJvbSByw6lnaSBtb2d5b3LDs3QsIGFtaXQgbcOhciB0ZWxqZXNlbiBlbGZlbGVqdGV0dCwgw61neSB2w6lnw7xsIG5lbSBtYXJhZHQgw6loZXMsIGRlIGEgbmFneSBkacOzIG1pYXR0IGtpY3NpdCBzem9tb3LDuiB2b2x0LgpBaG9neSBtw7psdGFrIGEgaGV0ZWssIGtpc8O8dMO2dHQgYSB0YXZhc3ppIG5hcCwgw6lzIGVsb2x2YWR0IGEgaMOzLiBNb2d5aSDDqXBwIGFycmEgdWdyw6FuZG96b3R0LCBhaG9sIHTDqWxlbiBrZXJlc2fDqWx0LCDDqXMgaGlydGVsZW4gw6lzenJldmV0dCB2YWxhbWl0LiBBeiDDtnJlZyB0w7ZsZ3lmYSBtZWxsZXR0IGVneSBhcHLDsywgesO2bGQgaGFqdMOhcyBkdWd0YSBraSBhIGZlasOpdCBhIGbDtmxkYsWRbC4K4oCTIE7DqXpkIGNzYWshIOKAkyBzesOzbHQgb2RhIG5la2kgYSBiw7ZsY3Mgw7ZyZWcgVMO2bGd5LiDigJMgTGVoZXQsIGhvZ3kgdGUgbmVtIHJlZ2dlbGl6dMOpbCBtZWcgYmVsxZFsZSwgTW9neWksIGRlIG5la2VtIGFkdMOhbCBlZ3kga2lzdGVzdHbDqXJ0LiBFYmLFkWwgYSBkacOzYsOzbCBlZ3lzemVyIGVneSBoYXRhbG1hcyBmYSBsZXN6LCBhbWluZWsgYXogw6FnYWluIG1hamQgYSB0ZSB1bm9rw6FpZCBmb2duYWsgdWdyw6FuZG96bmkuCk1vZ3lpIGVra29yIG3DoXIgZWd5w6FsdGFsw6FuIG5lbSBiw6FudGEgYSBkb2xnb3QuIFLDoWrDtnR0LCBob2d5IGLDoXIgZmVsZWTDqWtlbnkgdm9sdCwgYXpuYXAgxZEgbGV0dCBheiBlcmTFkSBsZWfDvGd5ZXNlYmIga2VydMOpc3plLg==" },
+            { t: "1. Fejezet: Alapok", c: "SXNtZXJ0ZXTFkSBhIG1hZ3lhcm9yc3rDoWdpIG3Ds2t1c29rcsOzbApNYWd5YXJvcnN6w6FnIGVyZGVpYmVuIHN6aW50ZSBtaW5kZW5ob2wgdGFsw6Fsa296aGF0c3ogbcOza3Vzb2trYWwsIGxlZ3llbiBzesOzIGLDvGtrw7Zzw7ZrcsWRbCB2YWd5IGZlbnl2ZXNla3LFkWwuIEV6ZWsgYSBraXMgw6FsbGF0b2sgaWdhemkgYWtyb2JhdMOhazogaGF0YWxtYXNha2F0IHVncmFuYWsgYXogw6FnYWsga8O2esO2dHQsIG1pa8O2emJlbiBib3pvbnRvcyBmYXJrdWtrYWwgZWd5ZW5zw7pseW96bmFrLCBtaW50IGVneSBrw7Z0w6lsdMOhbmNvcy4gQnVuZMOhanVrIHN6w61uZSB2w6FsdG96YXRvcywgYSB2w7Zyw7ZzZXNiYXJuw6F0w7NsIGVnw6lzemVuIGEgc8O2dMOpdGJhcm7DoWlnIHZhZ3kgZmVrZXTDqWlnIHRlcmplZGhldCwgZGUgYSBwb2Nha2p1ayBtaW5kaWcgaMOzZmVow6lyLgpOYXBrw7Z6YmVuIG5hZ3lvbiBlbGZvZ2xhbHRhaywgaGlzemVuIMOhbGxhbmTDs2FuIMOpbGVsZW0gdXTDoW4ga3V0YXRuYWsuIEtlZHZlbmMgY3NlbWVnw6lqw7xrIGEgbW9neW9yw7MsIGEgbWFraywgYSBkacOzIMOpcyBhIGZlbnnFkW1hZywgZGUgbsOpaGEgbcOpZyBib2d5w7NrYXQgaXMgcsOhZ2Nzw6FsbmFrLiBBIG3Ds2t1c29rIGfDtm1iw7ZsecWxIGbDqXN6a2V0IMOpcMOtdGVuZWsgZ2FsbHlha2LDs2wgYSBmw6FrIG1hZ2Fzw6FiYW4sIGFtaXQgcHVoYSBtb2jDoXZhbCDDqXMgZsWxdmVsIGLDqWxlbG5layBraS4gVMOpbGVuIG5lbSBhbHN6YW5hayBpZ2F6aSB0w6lsaSDDoWxtb3QsIGNzYWsgYmVow7p6w7NkbmFrIGEgbWVsZWcgZsOpc3prw7xrYmUgYSBuYWd5IGhpZGVnIGVsxZFsLiBIYSBraXPDvHQgYSBuYXAsIGlseWVua29yIGlzIGVsxZFiw7pqbmFrLCBob2d5IGVsxZFrZXJlc3PDqWsgYXogxZFzc3plbCBlbHJlanRldHQga8Opc3psZXRlaWtldC4gTmFneW9uIMOpYmVyIMOhbGxhdGvDoWssIGEgbGVna2lzZWJiIG5lc3pyZSBpcyBhem9ubmFsIGZlbHN6YWxhZG5hayBhIGZhIHTDtnJ6c8OpbiBhIGJpenRvbnPDoWdiYS4K8J+nkCBUdWR0YWQtZT8gRWd5IGl6Z2FsbWFzIMOpcmRla2Vzc8OpZwpBIG3Ds2t1c29rIGlnYXppICJmZWxlZMOpa2VueSBrZXJ0w6lzemVrIiEg8J+MswrFkHNzemVsIHJlbmdldGVnIG1hZ290IMOpcyBkacOzdCDDoXNuYWsgZWwgYSBmw7ZsZCBhbMOhLCBob2d5IGxlZ3llbiBtaXQgZW5uacO8ayB0w6lsZW4uIEF6b25iYW4gYW5ueWkgcmVqdGVraGVseWV0IGvDqXN6w610ZW5laywgaG9neSBzb2tyYSBrw7Z6w7xsw7xrIGVneXN6ZXLFsWVuIG5lbSBlbWzDqWtlem5lay4gQXogZWxmZWxlanRldHQgbW9neW9yw7NrYsOzbCDDqXMgbWFra29rYsOzbCBhenTDoW4gdGF2YXNzemFsIGFwcsOzIGNzZW1ldMOpayBoYWp0YW5hayBraSwgw61neSBhIG3Ds2t1c29rIHR1ZHR1a29uIGvDrXbDvGwgc2Vnw610ZW5layBhYmJhbiwgaG9neSBheiBlcmTFkSBtZWfDump1bGpvbiDDqXMgw7pqIGbDoWsgbsWRamVuZWsh" },
+            { t: "2. Fejezet: Színek", c: "QmVmZzFwcm90LDFhMWwwbDFvMWExYTF6MW9uZ2ZyaGZjYmIsMXN6Mm9mZmwv" },
             { t: "3. Fejezet: Titok", c: "QSBtZWR2ZSBzemVyZXRpIGEgbcOpemV0LCBkZSBhIGzDqXBldCBuZW0u" }
         ];
 
@@ -181,41 +194,62 @@
             const detail = document.getElementById('detail-view');
             const body = document.getElementById('text-body');
             try {
-                // Stabilabb Base64 -> UTF-8 dekódolás
-                let raw = _0x_data[index].c.replace(/\s/g, ''); 
-                const binString = atob(raw);
-                const bytes = Uint8Array.from(binString, (m) => m.codePointAt(0));
-                body.innerText = new TextDecoder().decode(bytes);
-            } catch(e) { 
-                console.error(e);
-                body.innerText = "Hiba a dekódolás során. Kérlek ellenőrizd a Python kódolót!"; 
-            }
+                let raw = _0x_data[index].c;
+                let decoded = decodeURIComponent(escape(window.atob(raw)));
+                body.innerText = decoded;
+            } catch(e) { body.innerText = "Hiba a dekódolás során."; }
             detail.style.display = 'block';
         }
 
         function _0x_back() {
-            _0x_stop();
+            _0x_stop(); // Beszéd leállítása kilépéskor
             document.getElementById('detail-view').style.display = 'none';
             document.getElementById('list-view').style.display = 'block';
         }
 
+        // --- HANGKEZELÉS (TTS) ---
         function _0x_speak() {
             const text = document.getElementById('text-body').innerText;
             if (!text) return;
+
+            // Leállítjuk az esetleges futó beszédet
             window.speechSynthesis.cancel();
+
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'hu-HU';
+            utterance.lang = 'hu-HU'; // Magyar nyelv kényszerítése
+            utterance.rate = 1.0;     // Sebesség (0.1 - 10)
+            utterance.pitch = 1.0;    // Hangmagasság (0 - 2)
+
             window.speechSynthesis.speak(utterance);
         }
 
-        function _0x_stop() { window.speechSynthesis.cancel(); }
+        function _0x_stop() {
+            window.speechSynthesis.cancel();
+        }
 
+        // PWA ÉS UI (Változatlan)
         if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
         let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; document.getElementById('install-panel').classList.add('visible'); });
-        async function pwaInstall() { if (deferredPrompt) { deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; if (outcome === 'accepted') document.getElementById('install-panel').classList.remove('visible'); deferredPrompt = null; } }
-        function togglePanel() { document.getElementById('install-panel').classList.toggle('collapsed'); document.getElementById('toggle-btn').innerText = document.getElementById('install-panel').classList.contains('collapsed') ? '›' : '‹'; }
-        function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault(); deferredPrompt = e;
+            document.getElementById('install-panel').classList.add('visible');
+        });
+        async function pwaInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') document.getElementById('install-panel').classList.remove('visible');
+                deferredPrompt = null;
+            }
+        }
+        function togglePanel() {
+            document.getElementById('install-panel').classList.toggle('collapsed');
+            document.getElementById('toggle-btn').innerText = document.getElementById('install-panel').classList.contains('collapsed') ? '›' : '‹';
+        }
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+            else document.exitFullscreen();
+        }
     </script>
 </body>
 </html>
