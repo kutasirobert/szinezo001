@@ -23,7 +23,7 @@
         }
 
         .glass-overlay {
-            background: rgba(255, 255, 255, 0.82); 
+            background: rgba(255, 255, 255, 0.20); 
             min-height: 100vh; width: 100%;
             display: flex; flex-direction: column; align-items: center;
             backdrop-filter: blur(8px);
@@ -126,12 +126,11 @@
             <div id="detail-view">
                 <div class="btn-row">
                     <button class="back-btn" onclick="_0x_back()">VISSZA</button>
-                    <button class="speak-btn" onclick="_0x_speak()">FELOLVASÁS</button>
-                    <button class="stop-btn" onclick="_0x_stop()">STOP</button>
+                    <button class="speak-btn" onclick="_0x_speak()">🔊 FELOLVASÁS</button>
+                    <button class="stop-btn" onclick="_0x_stop()">🛑 STOP</button>
                 </div>
                 <div id="text-body" style="text-align: left;"></div>
             </div>
-            <button id="logout-btn" onclick="_0x_logout()">KILÉPÉS (KÓD ÚJRAKÉRÉSE)</button>
         </div>
     </div>
 
@@ -146,7 +145,7 @@
     </div>
 
     <script>
-        const _0x_v = "0c3d3a0a1c1b1e118830185eaec3e5e6254ebc30f47f93a0a7613f2112e83c6e";
+        const _0x_v = "b66b448d722755e1ad140d09300b771df7c134c50855cba84cf02d64de400ceb";
         const _0x_k = "app_verified_state";
         
         const _0x_data = [
@@ -201,11 +200,6 @@
             document.getElementById('detail-view').style.display = 'none';
             document.getElementById('list-view').style.display = 'block';
             document.getElementById('logout-btn').style.display = 'inline-block';
-        }
-
-        function _0x_logout() {
-            localStorage.removeItem(_0x_k);
-            location.reload();
         }
 
         function _0x_speak() {
