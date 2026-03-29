@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title>Színező Melléklet v1.2.2</title>
+    <title>Színező Melléklet v1.3</title>
     <link rel="manifest" href="manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -109,6 +109,14 @@
 
     <script>
         const _0x_v = "0c3d3a0a1c1b1e118830185eaec3e5e6254ebc30f47f93a0a7613f2112e83c6e";
+        const _0x_k = "app_verified_state";
+
+        // Azonnali ellenőrzés betöltéskor
+        (function() {
+            if (localStorage.getItem(_0x_k) === "true") {
+                document.getElementById('start-container').style.display = 'none';
+            }
+        })();
 
         async function _0x4a21() {
             const _0x1 = document.getElementById('activation-input');
@@ -128,6 +136,8 @@
             if (_0x8 === _0x_v) {
                 _0x2.innerText = "Kód elfogadva";
                 _0x2.style.color = "#2ecc71";
+                // Mentés a helyi tárolóba
+                localStorage.setItem(_0x_k, "true");
                 setTimeout(() => { _0x3.style.display = 'none'; }, 800);
             } else {
                 _0x2.innerText = "Hibás kód";
@@ -135,6 +145,7 @@
             }
         }
 
+        // PWA ÉS UI (Változatlan rendszerkomponensek)
         if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
