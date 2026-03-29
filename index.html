@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title>Színező Melléklet v1.4</title>
+    <title>Színező Melléklet v1.4.1</title>
     <link rel="manifest" href="manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -24,7 +24,6 @@
             text-transform: uppercase; letter-spacing: 2px; text-align: center;
         }
 
-        /* --- Bejelentkező felület --- */
         #start-container {
             position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%); text-align: center;
@@ -45,7 +44,6 @@
 
         #msg { margin-top: 15px; font-weight: bold; font-size: 0.9rem; }
 
-        /* --- Lista és Tartalom --- */
         #content-area {
             display: none; width: 90%; max-width: 600px;
             padding-bottom: 50px;
@@ -61,15 +59,17 @@
 
         #detail-view {
             display: none; width: 100%; line-height: 1.6; color: #34495e;
+            background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
+
+        #text-body { white-space: pre-wrap; font-size: 1.1rem; }
 
         .back-btn {
             margin-bottom: 20px; padding: 10px 20px;
-            background: #95a5a6; color: white; border: none;
+            background: #34495e; color: white; border: none;
             border-radius: 5px; cursor: pointer; font-size: 0.9rem;
         }
 
-        /* --- UI elemek --- */
         #fs-button {
             position: fixed; top: 10px; right: 10px;
             background-color: rgba(0, 0, 0, 0.05); color: #7f8c8d;
@@ -121,12 +121,11 @@
         const _0x_v = "0c3d3a0a1c1b1e118830185eaec3e5e6254ebc30f47f93a0a7613f2112e83c6e";
         const _0x_k = "app_verified_state";
 
-        // Titkosított tartalom (Példa adatokkal - itt jön majd a 20 oldalnyi szöveg)
-        // A szövegek eltolva vannak tárolva (karakter kód - 1)
+        // A szövegek eltolva vannak tárolva (Minden karakter ASCII kódja - 1)
         const _0x_data = [
-            { t: "1. Fejezet: Alapok", c: "Besf!u©t{÷wfshf©b©t{¬of{¹©bmbeqbj¬s¹m///" },
-            { t: "2. Fejezet: Technikák", c: "B©t{¬of{¹t¬©ufoi¬m¹i©l÷m¹o©fshf©f©m///" },
-            { t: "3. Fejezet: Színkeverés", c: "B©t{¬ofl©lfwfs¹tf©fhz©l¹m¹oo¹m©n¥w¹t{fu///" }
+            { t: "1. Fejezet: Alapok", c: "Fz!fhz!pmvbtibup!t{÷wfsh/!B!sztt{fs!n°l÷m¬l!" },
+            { t: "2. Fejezet: Színek", c: "B!qjspt-!b!m°l °t!b!{÷me!b!m°ohfshfcfcc!t{¬ofl/!" },
+            { t: "3. Fejezet: Titok", c: "B!nfewf!t{fsfuj!b!n°{fu-!ef!b!m°qfu!ofn/!" }
         ];
 
         (function() {
@@ -179,9 +178,10 @@
             const detail = document.getElementById('detail-view');
             const body = document.getElementById('text-body');
             
-            // Dekódolás megjelenítéskor (karakter kód + 1)
+            // Dekódolás: Visszatoljuk a karaktereket (ASCII - 1)
+            // Itt a trükk: A kódban lévő karakter kódjából levonunk egyet
             let decoded = Array.from(_0x_data[index].c)
-                               .map(char => String.fromCharCode(char.charCodeAt(0) + 1))
+                               .map(char => String.fromCharCode(char.charCodeAt(0) - 1))
                                .join('');
             
             body.innerText = decoded;
@@ -193,7 +193,7 @@
             document.getElementById('list-view').style.display = 'block';
         }
 
-        // --- PWA ÉS UI ---
+        // PWA ÉS UI (Változatlan)
         if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
