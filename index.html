@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title>Színező Melléklet v1.5</title>
+    <title>Színező Melléklet v1.6.1</title>
     <link rel="manifest" href="manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,9 +13,23 @@
     <style>
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow-x: hidden; background-color: #ffffff;
+            overflow-x: hidden;
+            /* Fix háttérkép beállítása */
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-color: #f0f0f0; /* Tartalék szín, ha nincs kép */
             font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* Glass effekt: félátlátszó réteg a tartalom alatt */
+        .glass-overlay {
+            background: rgba(255, 255, 255, 0.82);
+            min-height: 100vh; width: 100%;
             display: flex; flex-direction: column; align-items: center;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
 
         #main-title {
@@ -28,6 +42,8 @@
             position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%); text-align: center;
             width: 80%; max-width: 300px; transition: opacity 0.5s;
+            background: white; padding: 25px; border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
 
         input[type="text"] {
@@ -46,18 +62,22 @@
 
         #content-area {
             display: none; width: 90%; max-width: 600px;
-            padding-bottom: 50px;
+            padding-bottom: 50px; z-index: 5;
         }
 
         .list-item {
-            background: #f8f9fa; margin-bottom: 10px; padding: 15px;
+            background: white; margin-bottom: 10px; padding: 15px;
             border-radius: 8px; border-left: 5px solid #3498db;
-            cursor: pointer; font-weight: bold; transition: background 0.2s;
+            cursor: pointer; font-weight: bold; transition: transform 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
+
+        .list-item:active { transform: scale(0.98); }
 
         #detail-view {
             display: none; width: 100%; line-height: 1.6; color: #34495e;
-            background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            background: white; padding: 25px; border-radius: 15px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             box-sizing: border-box;
         }
 
@@ -71,11 +91,12 @@
 
         #fs-button {
             position: fixed; top: 10px; right: 10px;
-            background-color: rgba(0, 0, 0, 0.05); color: #7f8c8d;
+            background-color: rgba(255, 255, 255, 0.8); color: #7f8c8d;
             border: 1px solid #bdc3c7; padding: 5px 10px; border-radius: 5px;
-            font-size: 0.6rem;
+            font-size: 0.6rem; z-index: 100;
         }
 
+        /* PWA Telepítő Panel */
         #install-panel {
             position: fixed; right: 0; top: 50%;
             transform: translateY(-50%) translateX(100%);
@@ -90,19 +111,21 @@
 </head>
 <body>
 
-    <h1 id="main-title">színező melléklet</h1>
+    <div class="glass-overlay">
+        <h1 id="main-title">színező melléklet</h1>
 
-    <div id="start-container">
-        <input type="text" id="activation-input" placeholder="Kód beírása..." maxlength="20">
-        <button id="start-btn" onclick="_0x4a21()">Kezdés</button>
-        <p id="msg"></p>
-    </div>
+        <div id="start-container">
+            <input type="text" id="activation-input" placeholder="Kód beírása..." maxlength="20">
+            <button id="start-btn" onclick="_0x4a21()">Kezdés</button>
+            <p id="msg"></p>
+        </div>
 
-    <div id="content-area">
-        <div id="list-view"></div>
-        <div id="detail-view">
-            <button class="back-btn" onclick="_0x_back()">← Vissza a listához</button>
-            <div id="text-body"></div>
+        <div id="content-area">
+            <div id="list-view"></div>
+            <div id="detail-view">
+                <button class="back-btn" onclick="_0x_back()">← Vissza</button>
+                <div id="text-body"></div>
+            </div>
         </div>
     </div>
 
@@ -177,17 +200,12 @@
             const body = document.getElementById('text-body');
             
             try {
-                // Dekódolás: Base64 -> UTF-8 String
                 let raw = _0x_data[index].c;
                 let decoded = decodeURIComponent(escape(window.atob(raw)));
                 body.innerText = decoded;
             } catch(e) {
-                // Ha még a régi típusú eltolt adat lenne ott, azt is lekezeljük biztonságból
-                body.innerText = Array.from(_0x_data[index].c)
-                                   .map(char => String.fromCharCode(char.charCodeAt(0) - 1))
-                                   .join('');
+                body.innerText = "Hiba a dekódolás során.";
             }
-            
             detail.style.display = 'block';
         }
 
@@ -196,6 +214,7 @@
             document.getElementById('list-view').style.display = 'block';
         }
 
+        // PWA ÉS UI ÖSSZETEVŐK (Változatlan)
         if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
