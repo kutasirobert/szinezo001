@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title>Színező Melléklet v1.4.1</title>
+    <title>Színező Melléklet v1.4.2</title>
     <link rel="manifest" href="manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -55,11 +55,10 @@
             cursor: pointer; font-weight: bold; transition: background 0.2s;
         }
 
-        .list-item:active { background: #e9ecef; }
-
         #detail-view {
             display: none; width: 100%; line-height: 1.6; color: #34495e;
             background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-sizing: border-box;
         }
 
         #text-body { white-space: pre-wrap; font-size: 1.1rem; }
@@ -121,11 +120,11 @@
         const _0x_v = "0c3d3a0a1c1b1e118830185eaec3e5e6254ebc30f47f93a0a7613f2112e83c6e";
         const _0x_k = "app_verified_state";
 
-        // A szövegek eltolva vannak tárolva (Minden karakter ASCII kódja - 1)
+        // ÚJ: URI-kódolt és eltolt példaszövegek (A Python segéddel generálva)
         const _0x_data = [
-            { t: "1. Fejezet: Alapok", c: "Fz!fhz!pmvbtibup!t{÷wfsh/!B!sztt{fs!n°l÷m¬l!" },
-            { t: "2. Fejezet: Színek", c: "B!qjspt-!b!m°l °t!b!{÷me!b!m°ohfshfcfcc!t{¬ofl/!" },
-            { t: "3. Fejezet: Titok", c: "B!nfewf!t{fsfuj!b!n°{fu-!ef!b!m°qfu!ofn/!" }
+            { t: "1. Fejezet: Alapok", c: "F{©21pmawbtibup©t{÷wfsh/©C©sztt{fs©n°l÷m¬l!" },
+            { t: "2. Fejezet: Színek", c: "C©qjspt-©b©m°l©°t©b©{÷me©b©m°ohfshfcfcc©t{¬ofl/!" },
+            { t: "3. Fejezet: Titok", c: "B!nfewf!t{fsfuj!b!n%C4%A9{fu-!ef!b!m%C3%A9qfu!ofn/!" }
         ];
 
         (function() {
@@ -178,13 +177,19 @@
             const detail = document.getElementById('detail-view');
             const body = document.getElementById('text-body');
             
-            // Dekódolás: Visszatoljuk a karaktereket (ASCII - 1)
-            // Itt a trükk: A kódban lévő karakter kódjából levonunk egyet
-            let decoded = Array.from(_0x_data[index].c)
-                               .map(char => String.fromCharCode(char.charCodeAt(0) - 1))
-                               .join('');
+            // Dekódolás: Eltolás vissza (-1), majd URI dekódolás a magyar karakterekhez
+            try {
+                let shifted = Array.from(_0x_data[index].c)
+                                   .map(char => String.fromCharCode(char.charCodeAt(0) - 1))
+                                   .join('');
+                body.innerText = decodeURIComponent(shifted);
+            } catch(e) {
+                // Ha a szöveg nem volt URI kódolva, simán csak eltolva adjuk vissza
+                body.innerText = Array.from(_0x_data[index].c)
+                                   .map(char => String.fromCharCode(char.charCodeAt(0) - 1))
+                                   .join('');
+            }
             
-            body.innerText = decoded;
             detail.style.display = 'block';
         }
 
