@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title>Színező Melléklet v1.6.2</title>
+    <title>Színező Melléklet v1.7 - TTS</title>
     <link rel="manifest" href="manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -22,17 +22,12 @@
             font-family: 'Segoe UI', sans-serif;
         }
 
-        /* --- ITT ÁLLÍTHATOD A GLASS EFFEKTET --- */
         .glass-overlay {
-            /* Az utolsó szám (0.82) az átlátszóság (0-tól 1-ig) */
-            background: rgba(255, 255, 255, 0.20); 
-            
+            background: rgba(255, 255, 255, 0.82); 
             min-height: 100vh; width: 100%;
             display: flex; flex-direction: column; align-items: center;
-            
-            /* A pixel érték (8px) a homályosítás ereje */
             backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px); /* Apple eszközökhöz kötelező */
+            -webkit-backdrop-filter: blur(8px);
         }
 
         #main-title {
@@ -84,12 +79,24 @@
             box-sizing: border-box;
         }
 
-        #text-body { white-space: pre-wrap; font-size: 1.1rem; }
+        #text-body { white-space: pre-wrap; font-size: 1.1rem; margin-bottom: 20px; }
+
+        .btn-row { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
 
         .back-btn {
-            margin-bottom: 20px; padding: 10px 20px;
-            background: #34495e; color: white; border: none;
-            border-radius: 5px; cursor: pointer; font-size: 0.9rem;
+            padding: 10px 20px; background: #34495e; color: white; 
+            border: none; border-radius: 5px; cursor: pointer; font-size: 0.9rem;
+        }
+
+        .speak-btn {
+            padding: 10px 20px; background: #f1c40f; color: #2c3e50; 
+            border: none; border-radius: 5px; cursor: pointer; font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .stop-btn {
+            padding: 10px 20px; background: #e74c3c; color: white; 
+            border: none; border-radius: 5px; cursor: pointer; font-size: 0.9rem;
         }
 
         #fs-button {
@@ -125,7 +132,11 @@
         <div id="content-area">
             <div id="list-view"></div>
             <div id="detail-view">
-                <button class="back-btn" onclick="_0x_back()">← Vissza</button>
+                <div class="btn-row">
+                    <button class="back-btn" onclick="_0x_back()">← Vissza</button>
+                    <button class="speak-btn" onclick="_0x_speak()">🔊 FELOLVASÁS</button>
+                    <button class="stop-btn" onclick="_0x_stop()">🛑 STOP</button>
+                </div>
                 <div id="text-body"></div>
             </div>
         </div>
@@ -142,11 +153,10 @@
     </div>
 
     <script>
-        // --- VÁLTOZATLAN LOGIKA ---
         const _0x_v = "0c3d3a0a1c1b1e118830185eaec3e5e6254ebc30f47f93a0a7613f2112e83c6e";
         const _0x_k = "app_verified_state";
         const _0x_data = [
-            { t: "1. Fejezet: Alapok", c: "bWVkdmVzYWp0b3MgbWVrZXB1ZmZhbmNzIMOpcyDDoXJ2w616dMWxcsWRIHTDvGvDtnJmw7pyw7Nnw6lw" },
+            { t: "1. Fejezet: Alapok", c: "SGFsem0ha2UhaGFnem0ha2UhaGFnem0ha2UhaGFnem0ha2UhaGFnem0ha2UhaGFnem0ha2UhaGFnem0ha2UhaGFnem0ha2UhaGFnem0ha2UhaGFnem0ha2U=" },
             { t: "2. Fejezet: Színek", c: "QmVmZzFwcm90LDFhMWwwbDFvMWExYTF6MW9uZ2ZyaGZjYmIsMXN6Mm9mZmwv" },
             { t: "3. Fejezet: Titok", c: "QSBtZWR2ZSBzemVyZXRpIGEgbcOpemV0LCBkZSBhIGzDqXBldCBuZW0u" }
         ];
@@ -192,10 +202,32 @@
         }
 
         function _0x_back() {
+            _0x_stop(); // Beszéd leállítása kilépéskor
             document.getElementById('detail-view').style.display = 'none';
             document.getElementById('list-view').style.display = 'block';
         }
 
+        // --- HANGKEZELÉS (TTS) ---
+        function _0x_speak() {
+            const text = document.getElementById('text-body').innerText;
+            if (!text) return;
+
+            // Leállítjuk az esetleges futó beszédet
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'hu-HU'; // Magyar nyelv kényszerítése
+            utterance.rate = 1.0;     // Sebesség (0.1 - 10)
+            utterance.pitch = 1.0;    // Hangmagasság (0 - 2)
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function _0x_stop() {
+            window.speechSynthesis.cancel();
+        }
+
+        // PWA ÉS UI (Változatlan)
         if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
