@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title>Színező Melléklet v1.4.2</title>
+    <title>Színező Melléklet v1.5</title>
     <link rel="manifest" href="manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -120,11 +120,10 @@
         const _0x_v = "0c3d3a0a1c1b1e118830185eaec3e5e6254ebc30f47f93a0a7613f2112e83c6e";
         const _0x_k = "app_verified_state";
 
-        // ÚJ: URI-kódolt és eltolt példaszövegek (A Python segéddel generálva)
         const _0x_data = [
-            { t: "1. Fejezet: Alapok", c: "F{©21pmawbtibup©t{÷wfsh/©C©sztt{fs©n°l÷m¬l!" },
-            { t: "2. Fejezet: Színek", c: "C©qjspt-©b©m°l©°t©b©{÷me©b©m°ohfshfcfcc©t{¬ofl/!" },
-            { t: "3. Fejezet: Titok", c: "B!nfewf!t{fsfuj!b!n%C4%A9{fu-!ef!b!m%C3%A9qfu!ofn/!" }
+            { t: "1. Fejezet: Alapok", c: "SGFsem0ha2UhaGFnem0ha2UhaGFnem0ha2UhaGFnem0ha2UhaGFnem0ha2UhaGFnem0ha2UhaGFnem0ha2UhaGFnem0ha2UhaGFnem0ha2UhaGFnem0ha2U=" },
+            { t: "2. Fejezet: Színek", c: "QmVmZzFwcm90LDFhMWwwbDFvMWExYTF6MW9uZ2ZyaGZjYmIsMXN6Mm9mZmwv" },
+            { t: "3. Fejezet: Titok", c: "QSBtZWR2ZSBzemVyZXRpIGEgbcOpemV0LCBkZSBhIGzDqXBldCBuZW0u" }
         ];
 
         (function() {
@@ -177,14 +176,13 @@
             const detail = document.getElementById('detail-view');
             const body = document.getElementById('text-body');
             
-            // Dekódolás: Eltolás vissza (-1), majd URI dekódolás a magyar karakterekhez
             try {
-                let shifted = Array.from(_0x_data[index].c)
-                                   .map(char => String.fromCharCode(char.charCodeAt(0) - 1))
-                                   .join('');
-                body.innerText = decodeURIComponent(shifted);
+                // Dekódolás: Base64 -> UTF-8 String
+                let raw = _0x_data[index].c;
+                let decoded = decodeURIComponent(escape(window.atob(raw)));
+                body.innerText = decoded;
             } catch(e) {
-                // Ha a szöveg nem volt URI kódolva, simán csak eltolva adjuk vissza
+                // Ha még a régi típusú eltolt adat lenne ott, azt is lekezeljük biztonságból
                 body.innerText = Array.from(_0x_data[index].c)
                                    .map(char => String.fromCharCode(char.charCodeAt(0) - 1))
                                    .join('');
@@ -198,7 +196,6 @@
             document.getElementById('list-view').style.display = 'block';
         }
 
-        // PWA ÉS UI (Változatlan)
         if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
