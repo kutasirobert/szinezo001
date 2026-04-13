@@ -1,2 +1,2 @@
 # szinezo001
-Háztáji állatok melléklet
+szinezo001
